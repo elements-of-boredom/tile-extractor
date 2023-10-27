@@ -103,7 +103,7 @@ function extract( imageData, tileWidth, tileHeight, tolerance )
 	var tt = createTileFrom(new ImageData(idata, tileWidth).data);
 	tiles.push(tt);
 
-	for( var tileIndex = 0; tileIndex < numTiles +1; ++tileIndex )
+	for( var tileIndex = 0; tileIndex < numTiles; ++tileIndex )
 	{
 		var tileX = (tileIndex % numCols) | 0;
 		var tileY = (tileIndex / numCols) | 0;
