@@ -40,7 +40,7 @@ function extract( imageData, tileWidth, tileHeight, tolerance )
 	var sourceHeight = imageData.height;
 	var sourceArray = imageData.data;
 
-	function createTileFrom()
+	function createTileFrom(sArray)
 	{
 		var tileData = new ImageData( tileWidth, tileHeight );
 		var deltaX = tileX * tileWidth;
@@ -55,7 +55,7 @@ function extract( imageData, tileWidth, tileHeight, tolerance )
 				var sourceIndex = ((deltaY + y) * sourceWidth + (deltaX + x)) << 2;
 
 				for( var i = 0; i < 4; ++i )
-					tileArray[tileIndex++] = sourceArray[sourceIndex++];
+					tileArray[tileIndex++] = sArray[sourceIndex++];
 			}
 		}
 		return tileData;
@@ -92,7 +92,18 @@ function extract( imageData, tileWidth, tileHeight, tolerance )
 	var map = [];
 	var index;
 
-	for( var tileIndex = 0; tileIndex < numTiles; ++tileIndex )
+	//Add a blank tile to appease GM2's tilesheet expectations.
+	var idata = new Uint8ClampedArray(Math.pow(tileWidth, 4));
+	for(var i = 0; i < idata.length; i+=4) {
+		idata[i] = 0;
+		idata[i+1] = 1;
+		idata[i+2] = 2;
+		idata[i+3] = 255;
+	}
+	var tt = createTileFrom(new ImageData(idata, tileWidth).data);
+	tiles.push(tt);
+
+	for( var tileIndex = 0; tileIndex < numTiles +1; ++tileIndex )
 	{
 		var tileX = (tileIndex % numCols) | 0;
 		var tileY = (tileIndex / numCols) | 0;
@@ -109,7 +120,8 @@ function extract( imageData, tileWidth, tileHeight, tolerance )
 		}
 		if( !tileExist )
 		{
-			tiles.push( createTileFrom() );
+			var tempTile = createTileFrom(sourceArray);
+			tiles.push( tempTile );
 		}
 
 		map.push( index );
